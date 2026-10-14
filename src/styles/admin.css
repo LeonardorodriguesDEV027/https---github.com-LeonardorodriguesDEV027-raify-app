@@ -1,0 +1,141 @@
+/* =========================
+   ÁREA DO ADMINISTRADOR (/admin)
+   Reaproveita os componentes visuais da área do agrônomo (agro.css).
+========================= */
+
+.adm-stats {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.adm-stat {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  color: var(--raify-text);
+  text-decoration: none;
+}
+
+.adm-stat:hover {
+  border-color: var(--raify-accent-line);
+  color: var(--raify-text);
+}
+
+.adm-stat b,
+.adm-stat small {
+  display: block;
+}
+
+.adm-stat b {
+  font-size: 1.35rem;
+  line-height: 1.1;
+}
+
+.adm-stat small {
+  color: var(--raify-muted);
+}
+
+.adm-row {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--raify-line);
+}
+
+.adm-row:last-child {
+  border-bottom: 0;
+}
+
+.adm-row small {
+  display: block;
+  color: var(--raify-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.adm-row .avatar-small,
+.adm-threads .avatar-small {
+  color: var(--raify-primary);
+  font-size: 0.85rem;
+}
+
+/* Caixa de entrada do suporte */
+.adm-inbox {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.adm-threads {
+  max-height: 600px;
+  overflow: auto;
+}
+
+.adm-threads > button {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  border: 0;
+  background: none;
+  text-align: left;
+  padding: 10px 8px;
+  border-radius: 12px;
+  margin-top: 6px;
+}
+
+.adm-threads > button.active,
+.adm-threads > button:hover {
+  background: var(--raify-soft);
+}
+
+.adm-threads small {
+  display: block;
+  color: var(--raify-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.adm-reports {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 0;
+}
+
+@media (max-width: 1100px) {
+  .adm-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .adm-inbox {
+    grid-template-columns: 1fr;
+  }
+
+  .adm-reports {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .adm-stats,
+  .adm-reports {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ag-grid-2.adm-grid-2 {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+@media (max-width: 1100px) {
+  .ag-grid-2.adm-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}

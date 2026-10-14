@@ -1,0 +1,28 @@
+{
+  "indexes": [
+    { "collectionGroup": "propriedades", "queryScope": "COLLECTION", "fields": [ { "fieldPath": "usuarioUid", "order": "ASCENDING" }, { "fieldPath": "criadoEm", "order": "DESCENDING" } ] },
+    { "collectionGroup": "areas", "queryScope": "COLLECTION", "fields": [ { "fieldPath": "usuarioUid", "order": "ASCENDING" }, { "fieldPath": "criadoEm", "order": "DESCENDING" } ] },
+    { "collectionGroup": "diagnosticos", "queryScope": "COLLECTION", "fields": [ { "fieldPath": "usuarioUid", "order": "ASCENDING" }, { "fieldPath": "criadoEm", "order": "DESCENDING" } ] },
+    { "collectionGroup": "planos_transicao", "queryScope": "COLLECTION", "fields": [ { "fieldPath": "usuarioUid", "order": "ASCENDING" }, { "fieldPath": "criadoEm", "order": "DESCENDING" } ] },
+    { "collectionGroup": "aplicacoes_manejo", "queryScope": "COLLECTION", "fields": [ { "fieldPath": "usuarioUid", "order": "ASCENDING" }, { "fieldPath": "criadoEm", "order": "DESCENDING" } ] },
+    { "collectionGroup": "manejos_alternativos", "queryScope": "COLLECTION", "fields": [ { "fieldPath": "usuarioUid", "order": "ASCENDING" }, { "fieldPath": "criadoEm", "order": "DESCENDING" } ] },
+    { "collectionGroup": "monitoramentos", "queryScope": "COLLECTION", "fields": [ { "fieldPath": "usuarioUid", "order": "ASCENDING" }, { "fieldPath": "criadoEm", "order": "DESCENDING" } ] },
+    { "collectionGroup": "acompanhamentos_tecnicos", "queryScope": "COLLECTION", "fields": [ { "fieldPath": "usuarioUid", "order": "ASCENDING" }, { "fieldPath": "criadoEm", "order": "DESCENDING" } ] },
+    { "collectionGroup": "documentos", "queryScope": "COLLECTION", "fields": [ { "fieldPath": "usuarioUid", "order": "ASCENDING" }, { "fieldPath": "criadoEm", "order": "DESCENDING" } ] },
+    { "collectionGroup": "calendario", "queryScope": "COLLECTION", "fields": [ { "fieldPath": "usuarioUid", "order": "ASCENDING" }, { "fieldPath": "criadoEm", "order": "DESCENDING" } ] },
+    { "collectionGroup": "safras", "queryScope": "COLLECTION", "fields": [ { "fieldPath": "usuarioUid", "order": "ASCENDING" }, { "fieldPath": "criadoEm", "order": "DESCENDING" } ] },
+    { "collectionGroup": "funcionarios", "queryScope": "COLLECTION", "fields": [ { "fieldPath": "usuarioUid", "order": "ASCENDING" }, { "fieldPath": "criadoEm", "order": "DESCENDING" } ] },
+    { "collectionGroup": "insumos", "queryScope": "COLLECTION", "fields": [ { "fieldPath": "usuarioUid", "order": "ASCENDING" }, { "fieldPath": "criadoEm", "order": "DESCENDING" } ] },
+    { "collectionGroup": "financeiro", "queryScope": "COLLECTION", "fields": [ { "fieldPath": "usuarioUid", "order": "ASCENDING" }, { "fieldPath": "criadoEm", "order": "DESCENDING" } ] },
+    { "collectionGroup": "analises_solo", "queryScope": "COLLECTION", "fields": [ { "fieldPath": "usuarioUid", "order": "ASCENDING" }, { "fieldPath": "criadoEm", "order": "DESCENDING" } ] },
+    { "collectionGroup": "certificacao", "queryScope": "COLLECTION", "fields": [ { "fieldPath": "usuarioUid", "order": "ASCENDING" }, { "fieldPath": "criadoEm", "order": "DESCENDING" } ] },
+    { "collectionGroup": "suporte_mensagens", "queryScope": "COLLECTION", "fields": [ { "fieldPath": "usuarioUid", "order": "ASCENDING" }, { "fieldPath": "criadoEm", "order": "ASCENDING" } ] },
+    { "collectionGroup": "agro_propriedades", "queryScope": "COLLECTION", "fields": [ { "fieldPath": "usuarioUid", "order": "ASCENDING" }, { "fieldPath": "criadoEm", "order": "DESCENDING" } ] },
+    { "collectionGroup": "agro_produtores", "queryScope": "COLLECTION", "fields": [ { "fieldPath": "usuarioUid", "order": "ASCENDING" }, { "fieldPath": "criadoEm", "order": "DESCENDING" } ] },
+    { "collectionGroup": "agro_diagnosticos", "queryScope": "COLLECTION", "fields": [ { "fieldPath": "usuarioUid", "order": "ASCENDING" }, { "fieldPath": "criadoEm", "order": "DESCENDING" } ] },
+    { "collectionGroup": "agro_atividades", "queryScope": "COLLECTION", "fields": [ { "fieldPath": "usuarioUid", "order": "ASCENDING" }, { "fieldPath": "criadoEm", "order": "DESCENDING" } ] },
+    { "collectionGroup": "agro_equipamentos", "queryScope": "COLLECTION", "fields": [ { "fieldPath": "usuarioUid", "order": "ASCENDING" }, { "fieldPath": "criadoEm", "order": "DESCENDING" } ] },
+    { "collectionGroup": "agro_laudos", "queryScope": "COLLECTION", "fields": [ { "fieldPath": "usuarioUid", "order": "ASCENDING" }, { "fieldPath": "criadoEm", "order": "DESCENDING" } ] }
+  ],
+  "fieldOverrides": []
+}

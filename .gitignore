@@ -1,0 +1,25 @@
+# Dependências
+node_modules/
+
+# Build
+dist/
+
+# Variáveis de ambiente (contêm a config do Firebase do seu projeto).
+# Use o próprio .env como modelo, mas não versione o preenchido.
+.env
+.env.local
+.env.*.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor / SO
+.DS_Store
+.vscode/
+*.log
+
+# Firebase
+.firebase/
+firebase-debug.log

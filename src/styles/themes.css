@@ -1,0 +1,91 @@
+/* =========================
+   TEMAS POR ÁREA
+   - Agricultor (/app) e telas públicas: verde (padrão em raify.css :root)
+   - Agrônomo (/agro): roxo/lavanda
+   - Administrador (/admin): azul claro
+   A classe é colocada no .shell pelo AppShell; modais ficam dentro dele.
+========================= */
+
+.theme-agro {
+  --raify-primary: #5b3fd9;
+  --raify-dark: #4a2fc0;
+  --raify-deep: #241a5c;
+  --raify-purple: #7b5ce6;
+  --raify-bg: #f4f3fd;
+  --raify-text: #1e1b3a;
+  --raify-muted: #6f6b8d;
+  --raify-line: #e6e3f5;
+  --raify-soft: #eeebfd;
+  --raify-red: #d6455d;
+  --raify-shadow: 0 12px 32px rgba(52, 36, 140, 0.07);
+  --raify-surface: #f8f7fe;
+  --raify-bar-alt: #c9c5de;
+  --raify-divider: #efedf8;
+  --raify-dot: rgba(91, 63, 217, 0.35);
+  --raify-focus: rgba(91, 63, 217, 0.15);
+  --raify-topline: rgba(230, 227, 245, 0.9);
+  --raify-backdrop: rgba(20, 14, 56, 0.45);
+  --raify-input-bg: #faf9ff;
+  --raify-input-border: #e1ddf4;
+  --raify-input-soft: #f2f1f9;
+  --raify-bubble: #eceaf6;
+  --raify-track: #ece9f8;
+  --raify-navtext: #4a4666;
+  --raify-accent-line: #c9bef5;
+  --raify-hero-1: #4a2fc0;
+  --raify-hero-2: #6b4be6;
+  --raify-hero-shadow: rgba(74, 47, 192, 0.25);
+}
+
+.theme-admin {
+  --raify-primary: #2b8fe0;
+  --raify-dark: #1b6fbf;
+  --raify-deep: #0f3557;
+  --raify-purple: #5aaef0;
+  --raify-bg: #f1f7fd;
+  --raify-text: #152b40;
+  --raify-muted: #5e7489;
+  --raify-line: #dceaf6;
+  --raify-soft: #e3f1fc;
+  --raify-red: #d6455d;
+  --raify-shadow: 0 12px 32px rgba(27, 111, 191, 0.08);
+  --raify-surface: #f5fafe;
+  --raify-bar-alt: #bfd3e4;
+  --raify-divider: #e8f0f8;
+  --raify-dot: rgba(43, 143, 224, 0.35);
+  --raify-focus: rgba(43, 143, 224, 0.15);
+  --raify-topline: rgba(220, 234, 246, 0.9);
+  --raify-backdrop: rgba(10, 30, 50, 0.45);
+  --raify-input-bg: #f7fbff;
+  --raify-input-border: #d3e4f3;
+  --raify-input-soft: #eef5fb;
+  --raify-bubble: #e6eff7;
+  --raify-track: #e3edf6;
+  --raify-navtext: #3f5568;
+  --raify-accent-line: #a9d3f5;
+  --raify-hero-1: #1f7fd1;
+  --raify-hero-2: #4fb3f6;
+  --raify-hero-shadow: rgba(31, 127, 209, 0.25);
+}
+
+/* O fundo da página acompanha o tema da área. */
+.shell.theme-agro,
+.shell.theme-admin {
+  background: var(--raify-bg);
+  color: var(--raify-text);
+}
+
+/* Agrônomo e admin usam o topo claro da referência; o agricultor mantém
+   o topo verde original. */
+.theme-agro .topbar,
+.theme-admin .topbar {
+  margin: 0 -28px 24px;
+  padding: 0 28px;
+  background-color: #fff;
+}
+
+.theme-agro .topbar .icon-btn,
+.theme-admin .topbar .icon-btn {
+  background: var(--raify-bg);
+  color: var(--raify-text);
+}

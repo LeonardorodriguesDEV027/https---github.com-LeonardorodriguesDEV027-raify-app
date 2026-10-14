@@ -1,0 +1,166 @@
+rules_version = '2';
+
+// =========================================================================
+// RAIFY — Regras de segurança do Firestore
+// -------------------------------------------------------------------------
+// Este arquivo é o "porteiro" do banco de dados. Ele roda dentro do
+// servidor do Google, antes de qualquer leitura ou escrita — ninguém
+// consegue burlar essas regras mexendo no app, porque o app nem chega
+// perto do banco sem passar por aqui primeiro.
+//
+// Ideia geral usada em quase todas as coleções:
+//   - Para LER ou EDITAR um registro específico, você precisa estar
+//     logado E ser o dono dele (usuarioUid == seu uid) OU ser admin.
+//   - Para CRIAR um registro novo, o campo usuarioUid do documento que
+//     está sendo criado precisa ser igual ao SEU uid (ninguém consegue
+//     criar um registro "em nome" de outra pessoa).
+//   - Ao EDITAR, ninguém pode trocar o dono (usuarioUid) de um registro.
+//
+// Sobre "admin":
+//   A forma recomendada de marcar alguém como admin é via Custom Claim
+//   (request.auth.token.admin == true), definida por uma Cloud Function
+//   ou pelo Admin SDK. Isso NÃO custa uma leitura extra e não pode ser
+//   forjado pelo usuário. Como fallback (para quem ainda não configurou
+//   claims), também aceitamos o campo tipoUsuario == 'admin' no perfil.
+// =========================================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // -----------------------------------------------------------------
+    // Funções auxiliares (reaproveitadas em várias regras abaixo)
+    // -----------------------------------------------------------------
+    function estaLogado() {
+      return request.auth != null;
+    }
+
+    function ehDono(dado) {
+      return estaLogado() && request.auth.uid == dado.usuarioUid;
+    }
+
+    // Admin via Custom Claim — barato (não faz leitura) e à prova de
+    // adulteração pelo cliente.
+    function ehAdminPorClaim() {
+      return estaLogado() && request.auth.token.admin == true;
+    }
+
+    // Fallback: lê o perfil do usuário logado na coleção "usuarios" para
+    // saber se tipoUsuario == 'admin'. Custa 1 leitura — por isso é usado
+    // só como alternativa quando não há Custom Claim configurada.
+    function ehAdminPorPerfil() {
+      return estaLogado() &&
+        get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.tipoUsuario in ['admin', 'Admin', 'ADMIN'];
+    }
+
+    function ehAdmin() {
+      return ehAdminPorClaim() || ehAdminPorPerfil();
+    }
+
+    // Verdadeiro quando a escrita NÃO altera o dono do registro.
+    function donoPreservado() {
+      return request.resource.data.usuarioUid == resource.data.usuarioUid;
+    }
+
+    // -----------------------------------------------------------------
+    // usuarios — perfil de cada pessoa (produtor, agrônomo ou admin)
+    // -----------------------------------------------------------------
+    match /usuarios/{userId} {
+      // Qualquer pessoa logada pode ler o PRÓPRIO perfil; admin pode
+      // ler o perfil de qualquer um (necessário para a tela Admin).
+      allow read: if estaLogado() && (request.auth.uid == userId || ehAdmin());
+
+      // Criar o próprio perfil (acontece 1x, no cadastro). Ninguém pode
+      // se auto-promover: no cadastro o tipo só pode ser produtor ou
+      // agrônomo e o status inicial é ATIVO. Admin é definido depois,
+      // por outro admin (ou por Custom Claim).
+      //
+      // Importante: esta regra NÃO chama ehAdmin() de propósito. No
+      // momento do create, o documento usuarios/{uid} ainda não existe,
+      // então um get() nele (como ehAdminPorPerfil faz) não tem o que
+      // ler — isso pode fazer a regra inteira falhar de forma pouco
+      // óbvia. Como criar o PRÓPRIO perfil nunca precisa de privilégio
+      // de admin, simplesmente não usamos ehAdmin() aqui.
+      allow create: if estaLogado()
+        && request.auth.uid == userId
+        && request.resource.data.tipoUsuario in ['produtor', 'agronomo']
+        && request.resource.data.status == 'ATIVO';
+
+      // Editar:
+      //  - Admin pode editar qualquer perfil (aprovar agrônomo, bloquear
+      //    usuário, promover a admin) — é assim que a tela Admin funciona.
+      //  - O próprio usuário pode editar seus dados básicos, MAS não pode
+      //    mexer nos campos sensíveis (tipoUsuario, status, aprovado).
+      allow update: if ehAdmin()
+        || (
+          estaLogado()
+          && request.auth.uid == userId
+          && request.resource.data.tipoUsuario == resource.data.tipoUsuario
+          && request.resource.data.status == resource.data.status
+          && request.resource.data.aprovado == resource.data.aprovado
+        );
+
+      allow delete: if ehAdmin();
+    }
+
+    // -----------------------------------------------------------------
+    // Coleções "de dono" — o mesmo padrão se repete em todas.
+    // Cada usuário só vê e mexe no que ele mesmo criou; admin vê tudo.
+    // O write foi separado em update/delete para poder exigir que o
+    // dono (usuarioUid) nunca seja trocado num update.
+    // -----------------------------------------------------------------
+    function podeCriar() {
+      return estaLogado() && request.resource.data.usuarioUid == request.auth.uid;
+    }
+    function podeAtualizar() {
+      return (ehDono(resource.data) && donoPreservado()) || ehAdmin();
+    }
+    function podeApagar() {
+      return ehDono(resource.data) || ehAdmin();
+    }
+    function podeLer() {
+      return ehDono(resource.data) || ehAdmin();
+    }
+
+    match /propriedades/{docId}            { allow read: if podeLer(); allow create: if podeCriar(); allow update: if podeAtualizar(); allow delete: if podeApagar(); }
+    match /areas/{docId}                   { allow read: if podeLer(); allow create: if podeCriar(); allow update: if podeAtualizar(); allow delete: if podeApagar(); }
+    match /diagnosticos/{docId}            { allow read: if podeLer(); allow create: if podeCriar(); allow update: if podeAtualizar(); allow delete: if podeApagar(); }
+    match /planos_transicao/{docId}        { allow read: if podeLer(); allow create: if podeCriar(); allow update: if podeAtualizar(); allow delete: if podeApagar(); }
+    match /aplicacoes_manejo/{docId}       { allow read: if podeLer(); allow create: if podeCriar(); allow update: if podeAtualizar(); allow delete: if podeApagar(); }
+    match /manejos_alternativos/{docId}    { allow read: if podeLer(); allow create: if podeCriar(); allow update: if podeAtualizar(); allow delete: if podeApagar(); }
+    match /monitoramentos/{docId}          { allow read: if podeLer(); allow create: if podeCriar(); allow update: if podeAtualizar(); allow delete: if podeApagar(); }
+    match /acompanhamentos_tecnicos/{docId}{ allow read: if podeLer(); allow create: if podeCriar(); allow update: if podeAtualizar(); allow delete: if podeApagar(); }
+    match /documentos/{docId}              { allow read: if podeLer(); allow create: if podeCriar(); allow update: if podeAtualizar(); allow delete: if podeApagar(); }
+    match /calendario/{docId}              { allow read: if podeLer(); allow create: if podeCriar(); allow update: if podeAtualizar(); allow delete: if podeApagar(); }
+    match /safras/{docId}                  { allow read: if podeLer(); allow create: if podeCriar(); allow update: if podeAtualizar(); allow delete: if podeApagar(); }
+    match /funcionarios/{docId}            { allow read: if podeLer(); allow create: if podeCriar(); allow update: if podeAtualizar(); allow delete: if podeApagar(); }
+    match /insumos/{docId}                 { allow read: if podeLer(); allow create: if podeCriar(); allow update: if podeAtualizar(); allow delete: if podeApagar(); }
+    match /financeiro/{docId}              { allow read: if podeLer(); allow create: if podeCriar(); allow update: if podeAtualizar(); allow delete: if podeApagar(); }
+    match /analises_solo/{docId}           { allow read: if podeLer(); allow create: if podeCriar(); allow update: if podeAtualizar(); allow delete: if podeApagar(); }
+    match /certificacao/{docId}            { allow read: if podeLer(); allow create: if podeCriar(); allow update: if podeAtualizar(); allow delete: if podeApagar(); }
+    // Admin também pode criar mensagem na conversa de outro usuário
+    // (é a resposta do suporte, com autor "suporte").
+    match /suporte_mensagens/{docId}       { allow read: if podeLer(); allow create: if podeCriar() || ehAdmin(); allow update: if podeAtualizar(); allow delete: if podeApagar(); }
+
+    // Área do agrônomo — mesmo padrão "de dono" das coleções acima.
+    match /agro_propriedades/{docId}        { allow read: if podeLer(); allow create: if podeCriar(); allow update: if podeAtualizar(); allow delete: if podeApagar(); }
+    match /agro_produtores/{docId}          { allow read: if podeLer(); allow create: if podeCriar(); allow update: if podeAtualizar(); allow delete: if podeApagar(); }
+    match /agro_diagnosticos/{docId}        { allow read: if podeLer(); allow create: if podeCriar(); allow update: if podeAtualizar(); allow delete: if podeApagar(); }
+    match /agro_atividades/{docId}          { allow read: if podeLer(); allow create: if podeCriar(); allow update: if podeAtualizar(); allow delete: if podeApagar(); }
+    match /agro_equipamentos/{docId}        { allow read: if podeLer(); allow create: if podeCriar(); allow update: if podeAtualizar(); allow delete: if podeApagar(); }
+    match /agro_laudos/{docId}              { allow read: if podeLer(); allow create: if podeCriar(); allow update: if podeAtualizar(); allow delete: if podeApagar(); }
+
+    // Conteúdo dos arquivos enviados em "Documentos" (base64), já que o
+    // app não usa o Firebase Storage (pago). Só o dono lê; não se edita,
+    // só cria/apaga. O teto de tamanho protege contra abuso.
+    match /documentos_arquivos/{docId} {
+      allow read: if podeLer();
+      allow create: if podeCriar()
+        && request.resource.data.dados is string
+        && request.resource.data.dados.size() < 1000000;
+      allow delete: if podeApagar();
+    }
+
+    // Qualquer coleção não listada acima fica bloqueada por padrão
+    // (mais seguro do que liberar tudo por engano).
+  }
+}
